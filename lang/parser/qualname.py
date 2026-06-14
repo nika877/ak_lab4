@@ -232,7 +232,7 @@ class GenericBuiltinSymbol:
         if len(compatible_overloads) > 1:
             if is_soft:
                 return None
-            raise Exception(f"Multiple overloads for {self.source} matches type {inferred_type}")
+            raise Exception(f"Multiple overloads for {self.source} match type {inferred_type}")
         return compatible_overloads[0]
 
     @staticmethod

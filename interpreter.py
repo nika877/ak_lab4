@@ -9,18 +9,23 @@ from lang.parser.step_04_assign_qualnames import VirtualToken
 #from lang.formatter import print_bytecode, print_tree, print_typed_expression
 
 
-def interpret(code: list[int], entry_point: int):
-    code.extend([0]*10000)
+def interpret(code: list[int], entry_point: int, auto_print_log=False):
+    code.extend([0]*100000)
     bc = code
     ip = entry_point
     acc = 0
     log = []
+    last_printed_idx = 0
     try:
         while True:
+            if auto_print_log:
+                print("\n".join(log[last_printed_idx:]))
+                last_printed_idx = len(log)
+
             match bc[ip]:
                 case BC.HALT:
                     log.append(f"[{ip:04}] HALT")
-                    return acc, log
+                    break
 
                 case BC.LOAD_IMM:
                     log.append(f"[{ip:04}] acc = {bc[ip+1]}")
@@ -159,45 +164,40 @@ def interpret(code: list[int], entry_point: int):
                     acc = bc[bc[bc[ip+1]]]
                     ip += 1
 
+                case BC.MOD_MEM:
+                    log.append(f"[{ip:04}] acc = acc mod mem[{bc[ip+1]}] -> acc = {acc % bc[bc[ip+1]]}")
+                    acc = acc % bc[bc[ip+1]]
+                    ip += 1
+
+                case BC.MOD_IMM:
+                    log.append(f"[{ip:04}] acc = acc mod {bc[ip+1]} -> acc = {acc % bc[ip+1]}")
+                    acc = acc % bc[ip+1]
+                    ip += 1
+
                 case unknown:
                     raise Exception(f"unknown instruction: {unknown} at {ip}")
 
             ip += 1
     except IndexError:
         log.append("[no heap]")
-        return -1, log
+        acc = -1
+
+    if auto_print_log:
+        print("\n".join(log[last_printed_idx:]))
+
+    return acc, log
 
 code = """
-(defun is_palindrome_rec (n rev original)
+(defun solve-euler-1 (n acc)
   (if (== n 0)
-      (== rev original)
-      (is_palindrome_rec (/ n 10) (+ (* rev 10) (- n (* (/ n 10) 10))) original)))
+      acc
+      (solve-euler-1 (- n 1)
+                     (+ acc (if (or (== (mod n 3) 0)
+                                    (== (mod n 5) 0))
+                                n
+                                0)))))
 
-(defun loop_j (i j current_max)
-  (if (< j 100)
-      current_max
-      (if (> (* i j) current_max)
-          (if (is_palindrome_rec (* i j) 0 (* i j))
-              (loop_j i (- j 1) (* i j))
-              (loop_j i (- j 1) current_max))
-          (loop_j i (- j 1) current_max))))
-
-(defun loop_i (i current_max)
-  (if (< i 100)
-      (print current_max)
-      (loop_i (- i 1) (loop_j i i current_max))))
-
-(print (loop_i 999 0))
-"""
-code = """
-(defun test (x) (
-    (lambda (y)
-        ((lambda (z)
-            (print (+ z x))
-        ) 1)
-    ) 2)
-)
-(test 3)
+(print (solve-euler-1 999 0))
 """
 #code = """
 #(print (+ 1 2))
@@ -211,7 +211,7 @@ for path, token in res.all_tokens.items():
     if isinstance(token, VirtualToken):
         print("VIRT", " = ", path)
     else:
-        print(path, " = ", token.qualname.path)
+        print(token.source, " = ", token.qualname.path)
 
 inferred = infer(res)
 
@@ -222,6 +222,6 @@ comp = Compiler.compile(inferred)
 
 print_bytecode(comp.bytecode, comp.meta)
 
-result, log = interpret(comp.bytecode, comp.entry_point)
-print('\n'.join(log))
-print("RESULT:", result)
+result, log = interpret(comp.bytecode, comp.entry_point, auto_print_log=False)
+#print('\n'.join(log))
+print("ACC AFTER HALT:", result)

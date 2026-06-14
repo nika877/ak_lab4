@@ -388,11 +388,14 @@ def infer(
 
     inferred_qualnames: list[InferredQualName] = []
 
+    failed: list[InferableQualName] = []
+
     for inferred in all_inferables:
         resolved_type = inferred.lang_type.deref(subm)
 
         if not resolved_type.is_complete(subm):
-            raise Exception(f"Unable to determine all types: {inferred.qualname.path} = {resolved_type}")
+            failed.append(inferred)
+            continue
         resolved_type = resolved_type.complete(subm)
         assert resolved_type
 
@@ -437,6 +440,14 @@ def infer(
             ))
         else:
             assert_never(inferred.qualname)
+
+    for inf in inferred_qualnames:
+        print(inf.qualname.path, "=", inf.lang_type)
+
+    if len(failed) > 0:
+        raise Exception(f"Unable to determine all types:\n{(
+            '\n'.join(f"{f.qualname.path} = {f.lang_type.deref(subm)}" for f in failed)
+        )}")
 
     return InferrerResult(
         inferred_qualnames,

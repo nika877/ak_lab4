@@ -114,6 +114,12 @@ def _print_bytecode(bc: list[int], meta: CompilationResultMeta, offset = 0, padd
                 case BC.LOAD_IND_MEM:
                     print(f"LOAD INDIRECT [{bc[i+1]}] (via {meta.memory.slots[bc[i+1]].path})")
                     i += 1
+                case BC.MOD_IMM:
+                    print(f"MOD #{bc[i+1]}")
+                    i += 1
+                case BC.MOD_MEM:
+                    print(f"MOD [{bc[i+1]}] ({meta.memory.slots[bc[i+1]].path})")
+                    i += 1
                 case _:
                     print(f"?")
 

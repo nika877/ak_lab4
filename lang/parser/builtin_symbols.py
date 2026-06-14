@@ -114,6 +114,75 @@ def builtin_add_integer_2():
     )
 
 
+def builtin_mod_integer():
+    return BuiltinSymbol(
+        source="mod",
+        path=TreePathEntry.for_builtin("mod<integer>").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [PrimitiveLanguageType.INTEGER, PrimitiveLanguageType.INTEGER],
+            PrimitiveLanguageType.INTEGER
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.MOD_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
+def builtin_and():
+    return BuiltinSymbol(
+        source="and",
+        path=TreePathEntry.for_builtin("and").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [PrimitiveLanguageType.BOOLEAN, PrimitiveLanguageType.BOOLEAN],
+            PrimitiveLanguageType.BOOLEAN
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.MUL_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
+
+def builtin_or():
+    return BuiltinSymbol(
+        source="or",
+        path=TreePathEntry.for_builtin("or").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [PrimitiveLanguageType.BOOLEAN, PrimitiveLanguageType.BOOLEAN],
+            PrimitiveLanguageType.BOOLEAN
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.MUL_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot,
+            BC.LOAD_MEM,
+            args[0],
+            BC.ADD_MEM,
+            args[1],
+            BC.SUB_MEM,
+            slot,
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
 def builtin_add_integer_2_lambda():
     return BuiltinSymbol(
         source="+",
@@ -235,6 +304,29 @@ def builtin_mul():
     )
 
 
+def builtin_div():
+    return BuiltinSymbol(
+        source="/",
+        path=TreePathEntry.for_builtin("/").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [
+                PrimitiveLanguageType.INTEGER,
+                PrimitiveLanguageType.INTEGER,
+            ],
+            PrimitiveLanguageType.INTEGER
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.DIV_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
 def builtin_le():
     return BuiltinSymbol(
         source="<=",
@@ -258,12 +350,88 @@ def builtin_le():
     )
 
 
+def builtin_lt():
+    return BuiltinSymbol(
+        source="<",
+        path=TreePathEntry.for_builtin("<").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [
+                PrimitiveLanguageType.INTEGER,
+                PrimitiveLanguageType.INTEGER,
+            ],
+            PrimitiveLanguageType.BOOLEAN
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.LT_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
+def builtin_gt():
+    return BuiltinSymbol(
+        source=">",
+        path=TreePathEntry.for_builtin(">").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [
+                PrimitiveLanguageType.INTEGER,
+                PrimitiveLanguageType.INTEGER,
+            ],
+            PrimitiveLanguageType.BOOLEAN
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.GT_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
+def builtin_eq():
+    return BuiltinSymbol(
+        source="==",
+        path=TreePathEntry.for_builtin("==").as_entire_tree_path(),
+        lang_type_builder=lambda typevar_emitter: FunctionLanguageType(
+            [
+                PrimitiveLanguageType.INTEGER,
+                PrimitiveLanguageType.INTEGER,
+            ],
+            PrimitiveLanguageType.BOOLEAN
+        ),
+        emit_inplace=lambda unit, slot, *args: unit.bytecode.extend([
+            BC.LOAD_MEM,
+            args[0],
+            BC.EQ_MEM,
+            args[1],
+            BC.STORE_MEM,
+            slot
+        ]),
+        emit_lambda=None
+    )
+
+
 def builtin_symbols() -> list[BuiltinSymbol]:
     return [
         builtin_halt(),
         builtin_sub(),
         builtin_mul(),
-        builtin_le()
+        builtin_div(),
+        builtin_le(),
+        builtin_lt(),
+        builtin_gt(),
+        builtin_eq(),
+        builtin_mod_integer(),
+        builtin_and(),
+        builtin_or()
     ]
 
 

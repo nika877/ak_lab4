@@ -33,6 +33,8 @@ class BC:
     STORE_IND_MEM = 60
     LOAD_IND_MEM = 70
     DIV_MEM = 123
+    MOD_IMM = 321
+    MOD_MEM = 333
 
 
 def iter_bytecode(bc: list[int]):
@@ -70,7 +72,9 @@ def iter_bytecode(bc: list[int]):
                 BC.JMP |
                 BC.JMP_T |
                 BC.STORE_IND_MEM |
-                BC.LOAD_IND_MEM
+                BC.LOAD_IND_MEM |
+                BC.MOD_IMM |
+                BC.MOD_MEM
             ):
                 yield i, bc[i], (bc[i+1],)
                 i += 1

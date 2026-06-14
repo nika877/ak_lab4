@@ -132,7 +132,7 @@ class Token_Step_02(Token_Step_01):
 
     @property
     def children(self) -> Never:
-        raise Exception("cannot access children after semantics were analyzed")
+        raise Exception("cannot access children after semantics have been analyzed")
 
 
 def build_token(token: Token_Step_01, s_expr: SExpr[Token_Step_01] | None):

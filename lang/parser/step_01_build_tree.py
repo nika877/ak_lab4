@@ -92,8 +92,7 @@ def step_01_build_tree(lexer_iter: Iterator[LexerToken]) -> Token_Step_01:
                 ParserTokenType.IDENT,
                 []
             ))
-            p_token = build_token(RECURSIVE_SOURCE, ParserTokenType.S_EXPR, children)
-            return cast(Token_Step_01, p_token)
+            return build_token(RECURSIVE_SOURCE, ParserTokenType.S_EXPR, children)
 
         elif token.ty == LexerTokenType.IDENT:
             children_stack[-1].append(build_token(token.source, ParserTokenType.IDENT, []))

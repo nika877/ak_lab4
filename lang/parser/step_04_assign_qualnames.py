@@ -198,13 +198,18 @@ def step_04_assign_qualnames(file_token: Token_Step_02) -> Step_04_AssignQualnam
         )
     }
 
+    i = 0
     for _ in range(len(virtual_tokens)):
+        j = 0
         for path, current_vtoken in virtual_tokens.items():
+            print(int((i * len(virtual_tokens) + j) / (len(virtual_tokens) * len(virtual_tokens)) * 100), "%", end="\r")
             if any(
                 path == vtoken.qualname.definition_path
                 for vtoken in used_virtual_tokens.values()
             ):
                 used_virtual_tokens[path] = current_vtoken
+            j += 1
+        i += 1
 
     all_tokens = {
         **all_real_tokens,

@@ -220,7 +220,6 @@ class Compiler:
 
     def compile_defun(self, token: Token_Step_04, defun: SExprDefun[Token_Step_04]):
         self.push_unit(token.qualname.path)
-        print("COMPILING DEFUN BODY")
         self.compile_token(defun.body)
         unit = self.pop_unit()
         self.processed_units.append(unit)
@@ -309,6 +308,8 @@ class Compiler:
         args_slots = slots[:-1]
         k_slot = slots[-1]
 
+        print(args_slots, k_slot)
+
         inferred.qualname.symbol.emit_lambda(
             self.current_unit,
             k_slot,
@@ -331,9 +332,12 @@ class Compiler:
                 continue
 
             if isinstance(inferred.qualname, BuiltinQualName):
+                print(f"Assigning builtin: {inferred.qualname.path}")
                 if inferred.qualname.symbol.emit_lambda:
-                    slot = self.memory.get_tag_slot(inferred.qualname.path)
-                    self.memory.slots[slot].value = self.find_unit_index(inferred.qualname.path)
+                    tag_slot = self.memory.get_tag_slot(inferred.qualname.path)
+                    self.memory.slots[tag_slot].value = self.find_unit_index(inferred.qualname.path)
+                    slot = self.memory.get_slot(inferred.qualname.path)
+                    self.memory.slots[slot].value = tag_slot
 
             elif isinstance(inferred.qualname, IntegerConstQualName):
                 slot = self.memory.get_slot(inferred.qualname.path)
