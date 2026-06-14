@@ -32,7 +32,6 @@ from lang.isa import (
 )
 
 
-
 def _build_memory(image: bytes, total_size: int) -> WordMemory:
     """Поднять `WordMemory` нужного размера на основе байтового образа."""
     assert len(image) <= total_size, "image larger than memory"
