@@ -665,6 +665,7 @@ class SimulationResult:
     ticks: int
     instructions: int
 
+
 def simulation(
     image: bytes,
     entry_point: int,

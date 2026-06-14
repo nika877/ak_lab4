@@ -29,8 +29,8 @@ def _run(source: str):
         compiled.entry_point,
         code_start,
         [],
-
     )
+
 
 class TestISADecoder(unittest.TestCase):
     """Бинарный образ декодируется обратно `iter_program` / `to_hex`."""
