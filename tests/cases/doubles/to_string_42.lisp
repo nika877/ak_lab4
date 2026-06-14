@@ -1,0 +1,1 @@
+(print (to-string 42.0d))

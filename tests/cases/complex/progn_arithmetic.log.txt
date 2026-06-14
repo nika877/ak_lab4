@@ -1,0 +1,41 @@
+(0003) [0692] LOAD_MEM      mem[0]=812          -> acc = 812
+(0006) [0700] mem[264] = acc -> mem[264] = 812
+(0010) [0708] LOAD_MEM      mem[240]=2          -> acc = 2
+(0015) [0716] mem[mem[0]] = acc -> mem[812] = 2
+(0019) [0724] LOAD_MEM      mem[0]=812          -> acc = 812
+(0022) [0732] ADD_IMM       #4                  -> acc = 816
+(0025) [0740] mem[0] = acc -> mem[0] = 816
+(0029) [0748] LOAD_MEM      mem[228]=1          -> acc = 1
+(0033) [0756] ADD_MEM       mem[228]=1          -> acc = 2
+(0036) [0764] mem[292] = acc -> mem[292] = 2
+(0040) [0772] LOAD_MEM      mem[264]=812        -> acc = 812
+(0043) [0780] mem[4] = acc -> mem[4] = 812
+(0047) [0788] LOAD_MEM      mem[292]=2          -> acc = 2
+(0050) [0796] mem[16] = acc -> mem[16] = 2
+(0053) [0804] JMP -> 492
+(0058) [0492] LOAD_IND_MEM  mem[mem[4]]=2       -> acc = 2
+(0061) [0500] NE_IMM        #0                  -> acc = 1
+(0064) [0508] JMP_T (acc=1) -> 540
+(0069) [0540] LOAD_IND_MEM  mem[mem[4]]=2       -> acc = 2
+(0072) [0548] NE_IMM        #1                  -> acc = 1
+(0075) [0556] JMP_T (acc=1) -> 588
+(0080) [0588] LOAD_IND_MEM  mem[mem[4]]=2       -> acc = 2
+(0083) [0596] NE_IMM        #2                  -> acc = 0
+(0086) [0604] JMP_T (acc=0) skip
+(0090) [0612] LOAD_MEM      mem[16]=2           -> acc = 2
+(0093) [0620] mem[244] = acc -> mem[244] = 2
+(0096) [0628] JMP -> 372
+(0100) [0372] LOAD_MEM      mem[0]=816          -> acc = 816
+(0103) [0380] mem[272] = acc -> mem[272] = 816
+(0107) [0388] LOAD_MEM      mem[248]=1          -> acc = 1
+... (27 lines elided) ...
+(0207) [0356] mem[16] = acc -> mem[16] = 12
+(0210) [0364] JMP -> 492
+(0215) [0492] LOAD_IND_MEM  mem[mem[4]]=0       -> acc = 0
+(0218) [0500] NE_IMM        #0                  -> acc = 0
+(0221) [0508] JMP_T (acc=0) skip
+(0225) [0516] LOAD_MEM      mem[16]=12          -> acc = 12
+(0228) [0524] mem[236] = acc -> mem[236] = 12
+(0231) [0532] JMP -> 296
+(0235) [0296] LOAD_MEM      mem[236]=12         -> acc = 12
+(0237) [0304] HALT

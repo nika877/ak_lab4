@@ -1,0 +1,5 @@
+(defun check-number (n)
+  (if (> n 10)
+      (print "big")
+      (print "small")))
+(check-number 15)

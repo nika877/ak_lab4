@@ -1,0 +1,1 @@
+(print (to-string (+ 1.0d 2.0d)))

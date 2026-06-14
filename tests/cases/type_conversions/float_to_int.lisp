@@ -1,0 +1,1 @@
+(print (to-string (to-integer 7.9)))

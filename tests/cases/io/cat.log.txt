@@ -1,0 +1,65 @@
+(0003) [1228] LOAD_MEM      mem[0]=1324         -> acc = 1324
+(0006) [1236] mem[288] = acc -> mem[288] = 1324
+(0010) [1244] LOAD_MEM      mem[244]=3          -> acc = 3
+(0015) [1252] mem[mem[0]] = acc -> mem[1324] = 3
+(0019) [1260] LOAD_MEM      mem[0]=1324         -> acc = 1324
+(0022) [1268] ADD_IMM       #4                  -> acc = 1328
+(0025) [1276] mem[0] = acc -> mem[0] = 1328
+(0029) [1284] LOAD_MEM      mem[284]=216        -> acc = 216
+(0032) [1292] mem[4] = acc -> mem[4] = 216
+(0036) [1300] LOAD_MEM      mem[288]=1324       -> acc = 1324
+(0039) [1308] mem[16] = acc -> mem[16] = 1324
+(0042) [1316] JMP -> 964
+(0047) [0964] LOAD_IND_MEM  mem[mem[4]]=0       -> acc = 0
+(0050) [0972] NE_IMM        #0                  -> acc = 0
+(0053) [0980] JMP_T (acc=0) skip
+(0057) [0988] LOAD_MEM      mem[16]=1324        -> acc = 1324
+(0060) [0996] mem[220] = acc -> mem[220] = 1324
+(0063) [1004] JMP -> 304
+(0066) [0304] LOAD_IMM      #0                  -> acc = 0
+(0069) [0312] mem[260] = acc -> mem[260] = 0
+(0074) [0320] LOAD_IND_MEM  mem[mem[252]]=0     -> acc = 0
+(0077) [0328] EQ_IMM        #0                  -> acc = 1
+(0080) [0336] JMP_T (acc=1) -> 320
+(0085) [0320] LOAD_IND_MEM  mem[mem[252]]=0     -> acc = 0
+(0088) [0328] EQ_IMM        #0                  -> acc = 1
+(0091) [0336] JMP_T (acc=1) -> 320
+(0096) [0320] LOAD_IND_MEM  mem[mem[252]]=0     -> acc = 0
+(0099) [0328] EQ_IMM        #0                  -> acc = 1
+(0102) [0336] JMP_T (acc=1) -> 320
+(0107) [0320] LOAD_IND_MEM  mem[mem[252]]=0     -> acc = 0
+... (26 lines elided) ...
+(0202) INT  port_in <- 5
+... (5 lines elided) ...
+(0223) [1224] IRET
+... (48 lines elided) ...
+(0402) INT  port_in <- 72
+... (5 lines elided) ...
+(0423) [1224] IRET
+... (48 lines elided) ...
+(0601) INT  port_in <- 101
+... (5 lines elided) ...
+(0622) [1224] IRET
+... (49 lines elided) ...
+(0801) INT  port_in <- 108
+... (5 lines elided) ...
+(0822) [1224] IRET
+... (48 lines elided) ...
+(1000) INT  port_in <- 108
+... (5 lines elided) ...
+(1021) [1224] IRET
+... (49 lines elided) ...
+(1200) INT  port_in <- 111
+... (5 lines elided) ...
+(1221) [1224] IRET
+... (139 lines elided) ...
+(1722) [1020] NE_IMM        #1                  -> acc = 1
+(1725) [1028] JMP_T (acc=1) -> 1076
+(1730) [1076] LOAD_IND_MEM  mem[mem[4]]=2       -> acc = 2
+(1733) [1084] NE_IMM        #2                  -> acc = 0
+(1736) [1092] JMP_T (acc=0) skip
+(1740) [1100] LOAD_MEM      mem[16]=0           -> acc = 0
+(1743) [1108] mem[240] = acc -> mem[240] = 0
+(1746) [1116] JMP -> 896
+(1750) [0896] LOAD_MEM      mem[240]=0          -> acc = 0
+(1752) [0904] HALT

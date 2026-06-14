@@ -1,0 +1,1 @@
+(print (to-string (+ (to-double 1) (to-double 2))))
