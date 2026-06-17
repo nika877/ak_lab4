@@ -2,15 +2,6 @@ import struct
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-"""Генератор байткода: обход CPS-дерева → машинные команды.
-
-Главный класс - Compiler. Он компилирует каждую конструкцию Lisp:
-  if → JMP_T / JMP
-  while → цикл с JMP назад
-  setq → STORE_MEM / STORE_IND_MEM (для мутируемых)
-  вызов функции → загрузка k, аргументов, переход в k_apply
-"""
-
 from lang.exceptions import CompilerError
 from lang.lang_type import FunctionLanguageType
 from lang.parser.qualname import (
@@ -43,6 +34,15 @@ from lang.parser.token_storage import TokenView
 from .bytecode import BC, BytecodeUnit, IncompleteJmpIndex, iter_bytecode
 from .inferrer import InferredQualName, InferrerResult
 from .memory import Memory
+
+"""Генератор байткода: обход CPS-дерева → машинные команды.
+
+Главный класс - Compiler. Он компилирует каждую конструкцию Lisp:
+  if → JMP_T / JMP
+  while → цикл с JMP назад
+  setq → STORE_MEM / STORE_IND_MEM (для мутируемых)
+  вызов функции → загрузка k, аргументов, переход в k_apply
+"""
 
 
 @dataclass(slots=True)
