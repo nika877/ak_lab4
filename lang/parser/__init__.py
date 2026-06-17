@@ -29,7 +29,7 @@ class ParserResult:
 
     storage: TokenStorage[QualifiedToken]
     all_tokens: dict[TreePath, FinalToken]
-    mutable_paths: set[TreePath]      # переменные, изменённые через setq
+    mutable_paths: set[TreePath]  # переменные, изменённые через setq
     autoboxed_paths: set[TreePath]  # мутируемые и захваченные лямбдой → в куче
 
     @property

@@ -18,18 +18,22 @@ from __future__ import annotations
 # struct — стандартный модуль для упаковки/распаковки чисел в байты
 # (нужен, чтобы записать entry_point и code_start в little-endian формате).
 import struct
+
 # sys — доступ к argv (аргументы командной строки) и stderr (поток ошибок).
 import sys
 
 # WordMemory — обёртка над bytes, которая трактует их как массив машинных слов
 # (см. lang/compiler/bytecode.py). Здесь используется только для отладки.
 from lang.compiler.bytecode import WordMemory
+
 # PipelineError — общий тип исключений всего пайплайна
 # (наследники: ParserError, InferrerError, CompilerError).
 from lang.exceptions import PipelineError
+
 # WORD_LEN — длина одного машинного слова в байтах (4, потому что архитектура 32-битная).
 # to_hex — функция, формирующая человеко-читаемый дамп памяти и кода.
 from lang.isa import WORD_LEN, to_hex
+
 # compile_source — оркестратор всех 8 стадий компиляции (см. lang/pipeline.py).
 from lang.pipeline import compile_source
 

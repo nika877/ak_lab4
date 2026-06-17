@@ -12,17 +12,17 @@ from enum import Enum, auto
 class LexerTokenType(Enum):
     """Типы токенов, которые выдаёт лексер."""
 
-    OPEN_PARENTHESES = auto()   # (
-    CLOSED_PARENTHESES = auto() # )
-    FLOAT = auto()              # 3.14
-    DOUBLE = auto()             # 3.14d
-    INTEGER = auto()            # 42, -7
-    BOOLEAN = auto()            # true, false
-    IDENT = auto()              # имя переменной или ключевое слово
-    STRING = auto()             # "текст"
-    UNDEFINED = auto()          # неизвестный символ (ошибка)
-    SKIP = auto()               # пробелы и переводы строк (пропускаем)
-    EOF = auto()                # конец файла
+    OPEN_PARENTHESES = auto()  # (
+    CLOSED_PARENTHESES = auto()  # )
+    FLOAT = auto()  # 3.14
+    DOUBLE = auto()  # 3.14d
+    INTEGER = auto()  # 42, -7
+    BOOLEAN = auto()  # true, false
+    IDENT = auto()  # имя переменной или ключевое слово
+    STRING = auto()  # "текст"
+    UNDEFINED = auto()  # неизвестный символ (ошибка)
+    SKIP = auto()  # пробелы и переводы строк (пропускаем)
+    EOF = auto()  # конец файла
 
 
 @dataclass(frozen=True, slots=True)

@@ -21,10 +21,13 @@ import sys
 # PipelineError — общая ошибка любой стадии компиляции
 # (наследники: ParserError, InferrerError, CompilerError).
 from lang.exceptions import PipelineError
+
 # print_bytecode — печать байткода в человеко-читаемом виде (отладочный дамп).
 from lang.formatter import print_bytecode
+
 # compile_source — оркестратор всех стадий пайплайна (лексер → ... → байткод).
 from lang.pipeline import compile_source
+
 # interpret — программный исполнитель команд: эмулирует ALU/acc/память,
 # но без потактовой логики (мгновенно «прогоняет» программу до HALT).
 from lang.runtime import interpret

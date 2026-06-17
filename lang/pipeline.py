@@ -24,16 +24,20 @@ from io import StringIO
 # CompilationResult — итоговая структура: байткод + entry_point + метаданные памяти.
 # Compiler — класс, который собирает байткод из типизированного CPS-дерева.
 from lang.compiler import CompilationResult, Compiler
+
 # infer — алгоритм Хиндли-Милнера: расставляет типы каждому узлу.
 # Вызывается дважды (см. ниже, в коде функции).
 from lang.compiler.inferrer import infer
+
 # tokenize — лексер: текст → последовательность токенов (числа, скобки, идентификаторы).
 from lang.lexer import tokenize
+
 # parse — парсер: токены → дерево S-выражений с разрешёнными именами.
 # ParserResult — структура результата парсера (хранилище + словари путей).
 # assign_qualnames — назначает квалифицированные имена (qualname) узлам дерева.
 # cps_transform — переписывает дерево в CPS-форму (см. lang/parser/cps.py).
 from lang.parser import ParserResult, assign_qualnames, cps_transform, parse
+
 # interpret — программный исполнитель байткода (быстрая проверка корректности).
 from lang.runtime import interpret
 
@@ -69,7 +73,7 @@ def compile_source(source: str) -> CompilationResult:
     cps_result = ParserResult(
         cps_qn.storage,
         cps_qn.all_tokens,
-        cps_qn.mutable_paths,    # переменные, мутируемые через setq
+        cps_qn.mutable_paths,  # переменные, мутируемые через setq
         cps_qn.autoboxed_paths,  # переменные в куче (мутируемые + захваченные лямбдой)
     )
 

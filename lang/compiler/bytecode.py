@@ -14,10 +14,10 @@ class BC(IntEnum):
     Архитектура acc: все вычисления идут через аккумулятор.
     """
 
-    HALT = 0          # останов
-    LOAD_IMM = 1      # acc ← константа
-    LOAD_MEM = 2      # acc ← mem[адрес]
-    STORE_MEM = 3     # mem[адрес] ← acc
+    HALT = 0  # останов
+    LOAD_IMM = 1  # acc ← константа
+    LOAD_MEM = 2  # acc ← mem[адрес]
+    STORE_MEM = 3  # mem[адрес] ← acc
     EQ_IMM = 4
     NE_IMM = 5
     LT_IMM = 6
@@ -41,7 +41,7 @@ class BC(IntEnum):
     INT = 22
     IRET = 23
     STORE_IND_MEM = 60  # mem[mem[адрес]] ← acc (для автобоксинга)
-    LOAD_IND_MEM = 70   # acc ← mem[mem[адрес]]
+    LOAD_IND_MEM = 70  # acc ← mem[mem[адрес]]
     DIV_MEM = 123
     DIV_IMM = 124
     MOD_IMM = 321

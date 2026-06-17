@@ -41,8 +41,8 @@ def interpret(
 
     bc = WordMemory(bytecode, Memory.WORD_LEN)
     bc.inner.extend([0] * 1_000_000)  # запас памяти под кучу (heap)
-    ip = entry_point   # указатель инструкций (Program Counter)
-    acc = 0            # аккумулятор — главный регистр
+    ip = entry_point  # указатель инструкций (Program Counter)
+    acc = 0  # аккумулятор — главный регистр
     log: list[str] = []
     last_printed_idx = 0
 
