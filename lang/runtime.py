@@ -1,4 +1,12 @@
-"""Простой интерпретатор байткода. НЕ МОДЕЛЬ!!"""
+"""Программный интерпретатор байткода (упрощённая модель процессора).
+
+Это НЕ аппаратная модель! Для симуляции железа с тактами и ControlUnit
+используй lang.machine.simulation.
+
+Здесь команды исполняются напрямую в Python: читаем опкод, меняем acc и PC.
+Поддерживает trap-ввод (символы приходят на тиках 200, 400, 600...) и вывод
+через PORT_OUT.
+"""
 
 from io import StringIO
 from time import sleep
@@ -16,8 +24,14 @@ def interpret(
     auto_print_log: bool = False,
     delay_s: float = 0.0,
 ):
-    """
-    Сам Интерпретатор байткода
+    """Выполнить байткод и вернуть (acc, вывод, лог).
+
+    bytecode     — бинарный образ (память + код)
+    entry_point  — адрес первой инструкции main (в байтах)
+    input_data   — символы для (input), приходят через trap
+    output_stream — куда писать вывод print
+    auto_print_log — печатать лог по ходу выполнения
+    delay_s      — пауза между тактами (для отладки)
     """
     if output_stream is None:
         output_stream = StringIO()
@@ -26,15 +40,16 @@ def interpret(
         input_data = []
 
     bc = WordMemory(bytecode, Memory.WORD_LEN)
-    bc.inner.extend([0] * 1_000_000)
-    ip = entry_point
-    acc = 0
+    bc.inner.extend([0] * 1_000_000)  # запас памяти под кучу (heap)
+    ip = entry_point   # указатель инструкций (Program Counter)
+    acc = 0            # аккумулятор — главный регистр
     log: list[str] = []
     last_printed_idx = 0
 
+    # Очередь trap-событий: ввод приходит на фиксированных тиках
     trap_queue = [(200 * (i + 1), val) for i, val in enumerate(input_data)]
     tick = -1
-    restore = None
+    restore = None  # сохранённое (ip, acc) при входе в обработчик прерывания
 
     try:
         while True:
@@ -46,6 +61,7 @@ def interpret(
                 print("\n".join(log[last_printed_idx:]))
                 last_printed_idx = len(log)
 
+            # Trap: имитация прерывания ввода — переход в ISR
             if trap_queue and tick == trap_queue[0][0]:
                 log.append(f"({tick:04}) INT")
                 restore = ip, acc
@@ -56,6 +72,7 @@ def interpret(
 
             opcode = bc[ip]
 
+            # Диспетчеризация по опкоду — каждая ветка = одна машинная команда
             match opcode:
                 case BC.IRET:
                     log.append(f"({tick:04}) IRET")

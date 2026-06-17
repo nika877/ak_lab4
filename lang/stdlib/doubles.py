@@ -1,8 +1,7 @@
-"""Builtin symbol definitions for double (64-bit IEEE 754) operations.
+"""Встроенные операции над DOUBLE (64-бит IEEE 754).
 
-Doubles use 2x32-bit slot emulation on the 32-bit VM:
-- Lo slot: lower 32 bits of the IEEE 754 double
-- Hi slot: upper 32 bits of the IEEE 754 double
+На 32-битной VM double эмулируется двумя слотами:
+  lo — младшие 32 бита, hi — старшие 32 бита числа.
 """
 
 import lang.compiler as compiler

@@ -1,4 +1,4 @@
-"""Builtin symbol definitions for string operations."""
+"""Встроенные операции со строками: concat, sort-string!, сравнение."""
 
 import lang.compiler as compiler
 from lang.compiler.bytecode import BC

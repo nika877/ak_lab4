@@ -1,4 +1,8 @@
-"""Builtin symbol definitions for integer operations."""
+"""Встроенные операции над целыми числами (INTEGER).
+
+Атомарные (+, -, *, /) вставляются inline в байткод.
+Сложные (to-string для int) — отдельные lambda-фрагменты с циклами.
+"""
 
 import lang.compiler as compiler
 from lang.compiler.bytecode import BC

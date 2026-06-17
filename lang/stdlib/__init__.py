@@ -1,7 +1,10 @@
-"""Builtin symbols for the Lisp compiler.
+"""Встроенные функции языка (stdlib).
 
-This module contains all built-in functions and operations available in the language,
-organized by category: integers, floats, doubles, strings, I/O, and logic operations.
+Каждая встроенная описана как BuiltinSymbol: имя, тип, способ генерации
+байткода (emit_lambda — отдельный фрагмент кода, emit_inplace — вставка
+в месте вызова для «атомарных» операций вроде + для целых).
+
+Модули по категориям: integers, floats, doubles, strings, io, logic.
 """
 
 from dataclasses import dataclass
@@ -57,7 +60,7 @@ class GenericBuiltinSymbolBuilder(GenericBuiltinSymbolBuilderProtocol):
 
 
 def builtin_symbols() -> list[BuiltinSymbol]:
-    """Return all non-generic builtin symbols."""
+    """Все нетипизированные (не generic) встроенные: +, <, input, concat..."""
     return [
         *builtin_logic(),
         *builtin_integers(),
@@ -69,7 +72,7 @@ def builtin_symbols() -> list[BuiltinSymbol]:
 
 
 def generic_builtin_symbols_builders() -> list[GenericBuiltinSymbolBuilder]:
-    """Return all generic (overloaded) builtin symbol builders."""
+    """Перегруженные встроенные: +, print, to-string с разными типами."""
     from .doubles import (
         builtin_add_double,
         builtin_to_double_from_integer,
@@ -142,7 +145,7 @@ def generic_builtin_symbols_builders() -> list[GenericBuiltinSymbolBuilder]:
 
 
 def find_builtin_symbol(source: str):
-    """Find a non-generic builtin symbol by its source name."""
+    """Найти встроенную по имени (+, -, input...)."""
     for symbol in builtin_symbols():
         if symbol.source == source:
             return symbol
@@ -150,7 +153,7 @@ def find_builtin_symbol(source: str):
 
 
 def find_generic_builtin_symbol_builder(source: str):
-    """Find a generic builtin symbol builder by its source name."""
+    """Найти перегружаемую встроенную (print, to-string...)."""
     for builder in generic_builtin_symbols_builders():
         if builder.source == source:
             return builder

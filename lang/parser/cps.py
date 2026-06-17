@@ -1,3 +1,12 @@
+"""CPS-трансформация (Continuation-Passing Style).
+
+Весь код переписывается так, что «что делать дальше» передаётся явно
+как аргумент k (continuation). Например, (+ 1 2) становится цепочкой
+вызовов, где каждый шаг получает k — куда передать результат.
+
+Нужно для единообразной компиляции вызовов и встроенных функций.
+"""
+
 from collections.abc import Sequence
 
 from .qualname import BuiltinQualName
@@ -22,6 +31,8 @@ from .tree import (
 
 
 class CPSTransformer:
+    """Преобразует дерево в CPS: добавляет лямбды-продолжения и вызовы k."""
+
     def __init__(self, input_storage: TokenStorage[QualifiedToken]) -> None:
         self._input = input_storage
         self._output: TokenStorage[SemanticToken] = TokenStorage([], -1)
@@ -635,6 +646,7 @@ class CPSSimplifier:
 
 
 def cps_transform(input_storage: TokenStorage[QualifiedToken]) -> TokenStorage[SemanticToken]:
+    """Публичная точка входа CPS: преобразование + упрощение дерева."""
     output = CPSTransformer(input_storage).apply()
     CPSSimplifier(output).apply()
     return output

@@ -1,3 +1,10 @@
+"""Генератор начального набора golden-тестов.
+
+Запуск: python tests/cases/_seed.py
+Создаёт пары .lisp + .json в tests/cases/<категория>/.
+Файлы .bin.txt и .log.txt появятся после первого прогона тестов с REGEN=1.
+"""
+
 from __future__ import annotations
 
 import json
@@ -6,6 +13,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 
 
+# Каталог тест-кейсов: (имя, исходник, ожидаемый результат в JSON)
 CASES: dict[str, list[tuple[str, str, dict]]] = {
     "arithmetic": [
         ("simple_addition", "(+ 2 3)", {"acc": 5, "output": ""}),
@@ -286,6 +294,7 @@ CASES: dict[str, list[tuple[str, str, dict]]] = {
 
 
 def main() -> None:
+    """Записать все кейсы из CASES на диск."""
     written = 0
     for category, cases in CASES.items():
         cat_dir = HERE / category

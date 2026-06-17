@@ -1,3 +1,15 @@
+"""Квалифицированные имена (QualName) и пути в дереве программы (TreePath).
+
+Каждый узел программы имеет уникальный путь, например:
+  file.st1.[square].x — параметр x в функции square
+
+Типы имён:
+  DefinitionQualName — определение (defun, lambda, let-подобное)
+  UsageQualName      — использование переменной (ссылка на definition)
+  BuiltinQualName    — встроенная функция (+, print, input...)
+  ProjectionQualName — захваченная переменная в замыкании
+"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -99,6 +111,8 @@ class TreePathEntry:
 
 @dataclass(slots=True, frozen=True)
 class TreePath:
+    """Уникальный путь к узлу в дереве (цепочка TreePathEntry)."""
+
     entries: tuple[TreePathEntry, ...]
 
     def __str__(self):

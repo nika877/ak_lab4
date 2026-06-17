@@ -1,3 +1,14 @@
+"""Система типов языка и алгоритм унификации (Хиндли–Милнер).
+
+Типы бывают:
+  - примитивные: INTEGER, FLOAT, DOUBLE, BOOLEAN, STRING, VOID
+  - функциональные: FUNC[arg1 arg2 -> return]
+  - переменные типа: A, B, T_0, ... (для вывода типов)
+
+Унификация — это «сведение» двух типов к одному: например, A и INTEGER
+дают подстановку {A → INTEGER}. Используется в inferrer.py.
+"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -8,12 +19,16 @@ from typing import ClassVar, Generic, Literal, TypeVar, assert_never, cast, over
 
 @dataclass
 class UnificationError:
+    """Ошибка унификации: два типа несовместимы."""
+
     message: str
     cause: UnificationError | None = None
 
 
 @dataclass
 class UnificationPass:
+    """Успешная унификация: итоговый тип и флаг «была ли новая подстановка»."""
+
     lang_type: LanguageType | InferableLanguageType
     was_unified: bool
 
@@ -24,6 +39,8 @@ type SubstitutionMap = dict[str, LanguageType | InferableLanguageType]
 
 @dataclass(frozen=True)
 class BaseLanguageType(ABC):
+    """Базовый класс для всех типов. Реализует унификацию и разыменование."""
+
     @abstractmethod
     def is_same(
         self, other: LanguageType | InferableLanguageType, subm: SubstitutionMap
@@ -41,6 +58,7 @@ class BaseLanguageType(ABC):
     def is_complete(self, subm: SubstitutionMap) -> bool: ...
 
     def deref(self, subm: SubstitutionMap) -> LanguageType | InferableLanguageType:
+        """Подставить все известные переменные типа из subm (разыменование)."""
         assert isinstance(self, (PrimitiveLanguageType, FunctionLanguageType, LanguageTypeVar))
         t = self
         seen = set()
@@ -91,6 +109,8 @@ PrimitiveLanguageTypeKind = Literal["VOID", "INTEGER", "FLOAT", "DOUBLE", "BOOLE
 
 @dataclass(frozen=True)
 class PrimitiveLanguageType(BaseLanguageType):
+    """Примитивный тип: INTEGER, STRING, VOID и т.д."""
+
     VOID: ClassVar[PrimitiveLanguageType]
     INTEGER: ClassVar[PrimitiveLanguageType]
     FLOAT: ClassVar[PrimitiveLanguageType]
@@ -141,6 +161,8 @@ class PrimitiveLanguageType(BaseLanguageType):
 
 @dataclass(frozen=True)
 class FunctionLanguageType(BaseLanguageType, Generic[LanguageTypeT]):
+    """Тип функции: список типов аргументов + тип возвращаемого значения."""
+
     _arg_types: Sequence[LanguageTypeT]
     _return_type: LanguageTypeT
 
@@ -236,6 +258,8 @@ class FunctionLanguageType(BaseLanguageType, Generic[LanguageTypeT]):
 
 @dataclass(frozen=True)
 class LanguageTypeVar(BaseLanguageType):
+    """Переменная типа (A, B, T_0) — заполняется при унификации."""
+
     _name: str
 
     @property

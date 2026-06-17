@@ -2,7 +2,15 @@ import struct
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-# from typing import assert_never
+"""Генератор байткода: обход CPS-дерева → машинные команды.
+
+Главный класс - Compiler. Он компилирует каждую конструкцию Lisp:
+  if → JMP_T / JMP
+  while → цикл с JMP назад
+  setq → STORE_MEM / STORE_IND_MEM (для мутируемых)
+  вызов функции → загрузка k, аргументов, переход в k_apply
+"""
+
 from lang.exceptions import CompilerError
 from lang.lang_type import FunctionLanguageType
 from lang.parser.qualname import (
@@ -39,12 +47,16 @@ from .memory import Memory
 
 @dataclass(slots=True)
 class CompilationResultMeta:
+    """Метаданные компиляции: карта памяти и список фрагментов кода."""
+
     memory: Memory
     processed_units: list[BytecodeUnit]
 
 
 @dataclass(slots=True)
 class CompilationResult:
+    """Итог компиляции: байты, точка входа и метаданные."""
+
     bytecode: bytes
     entry_point: int
     meta: CompilationResultMeta
@@ -52,6 +64,14 @@ class CompilationResult:
 
 @dataclass
 class Compiler:
+    """Компилятор: превращает типизированное CPS-дерево в байткод.
+
+    Специальные фрагменты:
+      UNIT_MAIN — точка входа программы
+      UNIT_K_APPLY — диспетчер вызовов (по тегу функции выбирает код)
+      UNIT_DEFAULT_INT_HANDLER_INPUT — обработчик прерывания ввода
+    """
+
     UNIT_MAIN = TreePathEntry("main", True).as_entire_tree_path()
     UNIT_K_APPLY = TreePathEntry("k_apply", True).as_entire_tree_path()
     UNIT_DEFAULT_INT_HANDLER_INPUT = TreePathEntry(
@@ -82,6 +102,7 @@ class Compiler:
 
     @staticmethod
     def compile(inferrer_result: InferrerResult):
+        """Главная точка компиляции: типизированное дерево → байткод."""
         file_token = inferrer_result.file_token
         file_s_expr = file_token.s_expr
         assert isinstance(file_s_expr, SExprFile)
@@ -149,6 +170,11 @@ class Compiler:
         return next(i for i, u in enumerate(self.processed_units) if u.path == path)
 
     def build_k_apply(self):
+        """Собрать диспетчер вызовов k_apply.
+
+        При вызове функции в K кладётся «продолжение», в ARG_SLOT — аргументы.
+        k_apply сравнивает тег функции и прыгает в нужный фрагмент кода.
+        """
         jmp_table_cond_indicies = []
         jmp_table_exit_indicies = []
 
@@ -222,6 +248,7 @@ class Compiler:
         self.processed_units.append(unit)
 
     def build_default_int_handler_input(self):
+        """Обработчик прерывания ввода: читает символ из PORT_IN в буфер."""
         self.push_unit(Compiler.UNIT_DEFAULT_INT_HANDLER_INPUT)
 
         self.extend_current_unit(
@@ -263,6 +290,7 @@ class Compiler:
                 ) * Memory.WORD_LEN
 
     def _is_autoboxed(self, qualname) -> bool:
+        """Нужна ли косвенная адресация (переменная в куче из-за setq в замыкании)."""
         if isinstance(qualname, UsageQualName):
             return qualname.definition_path in self.autoboxed_paths
         if isinstance(qualname, DefinitionQualName):
@@ -305,6 +333,7 @@ class Compiler:
     def compile_if_expr(
         self, token: TokenView[QualifiedToken], if_expr: SExprIf[TokenView[QualifiedToken]]
     ):
+        """Компиляция (if cond t f): ветвление через JMP_T и JMP."""
         self.compile_token(if_expr.cond)
         cond_slot = self.memory.get_slot(if_expr.cond.qualname.path)
         cond_load = BC.LOAD_IND_MEM if self._is_autoboxed(if_expr.cond.qualname) else BC.LOAD_MEM
@@ -455,6 +484,7 @@ class Compiler:
     def compile_while(
         self, token: TokenView[QualifiedToken], while_expr: SExprWhile[TokenView[QualifiedToken]]
     ):
+        """Компиляция (while cond body): цикл с проверкой условия в начале."""
         while_start_offset = self.current_unit_len * Memory.WORD_LEN
 
         # Compile condition
@@ -729,6 +759,7 @@ class Compiler:
 
     @staticmethod
     def emit_apply_k(unit: BytecodeUnit):
+        """Передать управление в k_apply (непрямой вызов функции)."""
         unit.bytecode.extend([BC.JMP, -1])
         unit.incomplete_indicies.append(
             IncompleteJmpIndex(len(unit.bytecode) - 1, Compiler.UNIT_K_APPLY)

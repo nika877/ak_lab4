@@ -1,3 +1,9 @@
+"""Синтаксическое дерево: построение из токенов лексера.
+
+Лексер даёт плоский поток; build_tree собирает вложенные S-выражения
+по скобкам. В конце оборачивает всё в (file ...).
+"""
+
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -64,6 +70,7 @@ class SyntaxToken:
 
 
 def build_tree(lexer_iter: Iterator[LexerToken]):
+    """Построить дерево токенов из потока лексера (стек скобок)."""
     from .token_storage import TokenStorage
 
     storage: TokenStorage[SyntaxToken] = TokenStorage([], -1)

@@ -1,4 +1,8 @@
-"""Builtin symbol definitions for I/O operations."""
+"""Ввод/вывод: (print ...) и (input).
+
+print пишет символы в PORT_OUT; input читает строку из буфера,
+заполняемого обработчиком прерывания при trap-вводе.
+"""
 
 import lang.compiler as compiler
 from lang.compiler.bytecode import BC

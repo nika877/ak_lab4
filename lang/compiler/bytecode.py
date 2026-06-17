@@ -1,3 +1,5 @@
+"""Опкоды байткода, единицы кода и доступ к памяти по словам."""
+
 import struct
 from dataclasses import dataclass, field
 from enum import IntEnum
@@ -6,10 +8,16 @@ import lang.parser.qualname
 
 
 class BC(IntEnum):
-    HALT = 0
-    LOAD_IMM = 1
-    LOAD_MEM = 2
-    STORE_MEM = 3
+    """Коды операций виртуальной машины (опкоды).
+
+    Каждая команда — одно или два 32-битных слова в памяти.
+    Архитектура acc: все вычисления идут через аккумулятор.
+    """
+
+    HALT = 0          # останов
+    LOAD_IMM = 1      # acc ← константа
+    LOAD_MEM = 2      # acc ← mem[адрес]
+    STORE_MEM = 3     # mem[адрес] ← acc
     EQ_IMM = 4
     NE_IMM = 5
     LT_IMM = 6
@@ -32,8 +40,8 @@ class BC(IntEnum):
     JMP_T = 21
     INT = 22
     IRET = 23
-    STORE_IND_MEM = 60
-    LOAD_IND_MEM = 70
+    STORE_IND_MEM = 60  # mem[mem[адрес]] ← acc (для автобоксинга)
+    LOAD_IND_MEM = 70   # acc ← mem[mem[адрес]]
     DIV_MEM = 123
     DIV_IMM = 124
     MOD_IMM = 321
@@ -51,6 +59,7 @@ class BC(IntEnum):
 
 
 def iter_bytecode(bc: list[int]):
+    """Обход списка опкодов: (индекс, опкод, кортеж аргументов)."""
     i = 0
     while i < len(bc):
         match bc[i]:
@@ -107,12 +116,16 @@ def iter_bytecode(bc: list[int]):
 
 @dataclass(slots=True)
 class IncompleteJmpIndex:
+    """Место в коде, где JMP ещё не знает целевой адрес (заполняется позже)."""
+
     i: int
     path: lang.parser.qualname.TreePath
 
 
 @dataclass(slots=True)
 class BytecodeUnit:
+    """Один фрагмент байткода: функция, main, обработчик прерывания и т.д."""
+
     path: lang.parser.qualname.TreePath
     bytecode: list[int] = field(default_factory=list)
     incomplete_indicies: list[IncompleteJmpIndex] = field(default_factory=list)

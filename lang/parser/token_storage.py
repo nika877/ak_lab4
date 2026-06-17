@@ -1,3 +1,5 @@
+"""Хранилище токенов и «вид» на один узел дерева (TokenView)."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -10,6 +12,8 @@ from .tree import ParserTokenType, RecursiveSource, SyntaxToken
 
 @dataclass
 class TokenStorage[TokenT: SyntaxToken]:
+    """Массив всех токенов программы + индекс корневого (file)."""
+
     _tokens: list[TokenT]
     _file_token_idx: int
 
@@ -45,6 +49,8 @@ class TokenStorage[TokenT: SyntaxToken]:
 
 @dataclass
 class TokenView[TokenT: SyntaxToken]:
+    """Обёртка над одним токеном: удобный доступ к детям, source, s_expr."""
+
     _storage: TokenStorage[TokenT]
     _index: int
 

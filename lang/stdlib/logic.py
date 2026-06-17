@@ -1,4 +1,4 @@
-"""Builtin symbol definitions for boolean and comparison operations."""
+"""Логические и сравнительные встроенные: and, or, ==, <, > и т.д."""
 
 from lang.compiler.bytecode import BC
 from lang.lang_type import (

@@ -1,3 +1,9 @@
+"""Семантические S-выражения: распознавание конструкций языка.
+
+После build_tree у нас просто дерево скобок. analyze_s_expr смотрит на
+первый идентификатор в списке и создаёт SExprDefun, SExprLambda, SExprIf...
+"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -76,6 +82,8 @@ class SExprCall[ParserTokenT](BaseSExpr[ParserTokenT]):
 
 @dataclass
 class SExprDefun[ParserTokenT](BaseSExpr[ParserTokenT]):
+    """(defun имя (args...) тело) — именованная функция."""
+
     symbol: str
     args: Sequence[ParserTokenT]
     body: ParserTokenT
@@ -93,6 +101,8 @@ class SExprDefun[ParserTokenT](BaseSExpr[ParserTokenT]):
 
 @dataclass
 class SExprLambda[ParserTokenT](BaseSExpr[ParserTokenT]):
+    """(lambda (args...) тело) — анонимная функция / замыкание."""
+
     args: Sequence[ParserTokenT]
     body: ParserTokenT
 
@@ -141,6 +151,8 @@ class SExprProgn[ParserTokenT](BaseSExpr[ParserTokenT]):
 
 @dataclass
 class SExprSetq[ParserTokenT](BaseSExpr[ParserTokenT]):
+    """(setq x значение) — мутабельное присваивание (только параметры функции)."""
+
     target: ParserTokenT
     value: ParserTokenT
 
@@ -198,6 +210,7 @@ class SemanticToken(SyntaxToken):
 
 
 def analyze_s_expr(storage: TokenStorage[SyntaxToken]):
+    """Обойти синтаксическое дерево и прикрепить SExpr к каждому узлу."""
     s_expr_map: dict[int, SExpr[int] | None] = {}
 
     def traverse(idx: int):

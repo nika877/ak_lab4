@@ -1,3 +1,10 @@
+"""Вывод типов (type inference) по алгоритму Хиндли–Милнера.
+
+Для каждого узла дерева создаётся тип (или переменная типа A, B, ...).
+Затем накладываются ограничения: аргументы вызова, ветки if, тело defun...
+Цикл унификации сходится — все переменные типа заменяются конкретными типами.
+"""
+
 import string
 from dataclasses import dataclass
 from itertools import count
@@ -88,6 +95,7 @@ def unify(
     u2: InferableLanguageType | InferableQualName,
     subm: SubstitutionMap,
 ) -> InferableUnificationResult:
+    """Свести два типа; при успехе обновить subm и типы в InferableQualName."""
     t1 = u1.lang_type if isinstance(u1, InferableQualName) else u1
     t2 = u2.lang_type if isinstance(u2, InferableQualName) else u2
 
@@ -293,6 +301,7 @@ def constrain(
     make_typevar: LanguageTypeVarEmitter,
     subm: SubstitutionMap,
 ) -> InferableUnificationResult:
+    """Наложить ограничения на тип узла в зависимости от вида выражения."""
     if isinstance(inferable.qualname, (BuiltinQualName, GenericBuiltinQualName)):
         return InferableUnificationResult.empty()
 
@@ -371,6 +380,11 @@ class InferrerResult:
 
 
 def infer(res: ParserResult, use_semantic_types: bool = True) -> InferrerResult:
+    """Главная функция вывода типов.
+
+    use_semantic_types=True  — до CPS: встроенные без continuation в типе
+    use_semantic_types=False — после CPS: все функции с continuation
+    """
     initial_typevars: dict[TreePath, InferableQualName] = {}
     generic_builtin_symbols: dict[TreePath, GenericBuiltinSymbol] = {}
 

@@ -1,8 +1,15 @@
+"""Человекочитаемый вывод скомпилированного байткода.
+
+Печатает память (слоты переменных) и команды с мнемониками (LOAD, JMP, HALT...).
+Используется в interpreter.py для отладки.
+"""
+
 from lang.compiler import BC, CompilationResultMeta, Memory
 from lang.compiler.bytecode import WordMemory
 
 
 def _unit_start(i: int, meta: CompilationResultMeta):
+    """Найти имя функции/блока, с которого начинается код по адресу i."""
     if i < len(meta.memory.slots) * Memory.WORD_LEN:
         return None
 
@@ -14,6 +21,7 @@ def _unit_start(i: int, meta: CompilationResultMeta):
 
 
 def _print_bytecode(bc: WordMemory, meta: CompilationResultMeta, offset=0, padding=4):
+    """Печать памяти и команд с подписями слотов и мнемониками."""
     i = offset
     print("memory:")
     while i < len(bc):
@@ -190,4 +198,5 @@ def _print_bytecode(bc: WordMemory, meta: CompilationResultMeta, offset=0, paddi
 
 
 def print_bytecode(bc: bytes, meta: CompilationResultMeta):
+    """Публичная обёртка: дамп байткода в stdout."""
     _print_bytecode(WordMemory(bc, Memory.WORD_LEN), meta)

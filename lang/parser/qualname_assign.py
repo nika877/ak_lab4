@@ -1,3 +1,10 @@
+"""Назначение квалифицированных имён переменным и константам.
+
+Обходит дерево, для каждого идентификатора решает: это определение,
+использование, встроенная функция или литерал. Строит таблицу областей
+видимости и находит mutable_paths / autoboxed_paths для setq и замыканий.
+"""
+
 from __future__ import annotations
 
 import struct
@@ -70,6 +77,7 @@ def tree_traverser[TreeTraverserStateT](
     fn: Callable[[TokenView[SemanticToken], TreePath, TreeTraverserStateT], TreeTraverserStateT],
     path: TreePath | None = None,
 ):
+    """Обход дерева с накоплением пути и вызовом fn на каждом узле."""
     path = path or TreePathEntry.for_file().as_entire_tree_path()
     s_expr = view.s_expr
     if s_expr:
@@ -154,6 +162,7 @@ class QualNameResult:
 def assign_qualnames(
     storage: TokenStorage[SemanticToken],
 ) -> QualNameResult:
+    """Главная функция: присвоить QualName каждому токену и найти setq/замыкания."""
     qualname_map: dict[int, QualName] = {}
     global_defun_paths: dict[str, TreePath] = {}
     virtual_tokens: dict[TreePath, VirtualToken] = {}
@@ -279,6 +288,7 @@ def assign_qualnames(
         **{path: vtoken for path, vtoken in virtual_tokens.items() if path in used_virtual_tokens},
     }
 
+    # Переменные, которые меняются через setq
     mutable_paths: set[TreePath] = set()
     for idx, _ in qualname_map.items():
         token = new_storage.get(idx)
@@ -293,6 +303,7 @@ def assign_qualnames(
         if isinstance(vtoken.qualname, ProjectionQualName):
             captured_paths.add(vtoken.qualname.definition_path)
 
+    # Мутируемые И захваченные лямбдой → хранить в куче (указатель в слоте)
     autoboxed_paths = mutable_paths & captured_paths
 
     projections = [

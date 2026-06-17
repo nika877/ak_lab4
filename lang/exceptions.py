@@ -1,10 +1,26 @@
-class PipelineError(Exception): ...
+"""Иерархия ошибок компилятора.
+
+Все ошибки трансляции наследуются от PipelineError — так их можно поймать
+одним except на верхнем уровне (translator.py, interpreter.py).
+
+Этапы и их ошибки:
+  - ParserError   — синтаксис, неизвестные переменные, дубли defun
+  - InferrerError — не удалось вывести типы (алгоритм Хиндли–Милнера)
+  - CompilerError — ошибки генерации байткода / раскладки памяти
+"""
 
 
-class ParserError(PipelineError): ...
+class PipelineError(Exception):
+    """Базовая ошибка любого этапа компиляции."""
 
 
-class InferrerError(PipelineError): ...
+class ParserError(PipelineError):
+    """Ошибка парсера или семантического анализа (до вывода типов)."""
 
 
-class CompilerError(PipelineError): ...
+class InferrerError(PipelineError):
+    """Ошибка вывода типов: несовместимые типы, неразрешённые переменные."""
+
+
+class CompilerError(PipelineError):
+    """Ошибка компилятора: не найден слот памяти, неверное выражение после CPS."""

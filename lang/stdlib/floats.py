@@ -1,4 +1,4 @@
-"""Builtin symbol definitions for float operations."""
+"""Встроенные операции над FLOAT (32-битные числа с плавающей точкой)."""
 
 import lang.compiler as compiler
 from lang.compiler.bytecode import BC

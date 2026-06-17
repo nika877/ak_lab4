@@ -1,3 +1,14 @@
+"""Статическая раскладка памяти виртуальной машины.
+
+Память — единое 32-битное адресное пространство (фон Нейман):
+  0x00 — HEAP (указатель на свободную ячейку кучи)
+  0x04 — K (текущее продолжение — continuation)
+  0x08 — PORT_IN, 0x0C — PORT_OUT (ввод/вывод)
+  0x10.. — ARG_SLOT_1..16 (аргументы при вызове)
+  далее — слоты переменных, строк, констант
+  в конце — байткод программы
+"""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -26,6 +37,8 @@ from .inferrer import InferrerResult
 
 @dataclass(init=False)
 class MemorySlot32:
+    """Один слот памяти (4 байта): привязан к пути в дереве программы."""
+
     path: TreePath
     _value: c_int32
 
@@ -63,12 +76,15 @@ class LookupCaptureEntry:
 
 @dataclass
 class Memory:
-    WORD_LEN = 4
+    """Карта памяти: слоты, таблицы поиска, захваты замыканий."""
 
-    MAX_ARITY = 16
+    WORD_LEN = 4  # размер одного слова в байтах
+
+    MAX_ARITY = 16  # максимум аргументов у функции
 
     @classmethod
     def arg_slots(cls):
+        """Генератор адресов ARG_SLOT_1 .. ARG_SLOT_16."""
         for i in range(cls.MAX_ARITY):
             yield (4 + i) * cls.WORD_LEN
         raise CompilerError(f"Maximum arity of {cls.MAX_ARITY} was superseded")
@@ -79,6 +95,7 @@ class Memory:
         for i in range(32):
             yield (base_idx + i) * cls.WORD_LEN
 
+    # Фиксированные системные ячейки (см. README — организация памяти)
     HEAP = 0 * WORD_LEN
     K = 1 * WORD_LEN
     PORT_IN = 2 * WORD_LEN
@@ -145,6 +162,11 @@ class Memory:
 
     @staticmethod
     def from_inferrer_result(res: InferrerResult) -> Memory:
+        """Построить карту памяти по результатам вывода типов.
+
+        Проходит все переменные, константы, параметры функций и выделяет
+        каждому уникальный слот. DOUBLE занимает 2 слота, STRING — длину + символы.
+        """
         inferred = res.all_inferred
         autoboxed_paths = res.autoboxed_paths
 
